@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="index.css">
+    <title>My home - John Pork</title>
+    <script type="text/javascript" src="env.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Home</h1>
+    </header>
+    <nav>
+        <a href="contact.html">Contact</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="home.html">Home</a>
+    </nav>
+    <main>
+        <figure>
+            <img id="bigimg" src="https://i.ytimg.com/vi/FX_yrotbvtQ/frame0.jpg"/>
+        </figure>
+        <script>
+            const bigimg = document.getElementById("bigimg");
+            let transform = 100;
+            bigimg.addEventListener("click", () => {
+                transform = transform + (transform / 10);
+                bigimg.style.transform = `scale(${transform}%)`;
+            })
+        </script>
+        <h2>Why you should accept this call</h2>
+        <div class="list-div">
+            <ul>
+                <li>He is calling you</li>
+                <li>Ye</li>
+            </ul>
+        </div>
+        <h2>John Pork is lonely, message him now!</h2>
+        <div class="message-div" id="insmsg">
+            <p>John Pork: hey, I'm lonely 😈🥵</p>
+            <p id="waitmsg" style="font-family: cursive">Waiting for you to send a message</p>
+        </div>
+        <input id="msg" name="message" type="text" placeholder="Hey John Pork, don't be lonely, I'm here.."><button id="send">Send</button>
+        <script>
+            import { api } from "./env.js"
+
+            document.getElementById("send").addEventListener("click", (e) => {
+                const messageCount = localStorage.getItem("MessageCount") ?? 0;
+                localStorage.setItem("MessageCount", messageCount + 1);
+                const message = document.getElementById("msg").value;
+                document.getElementById("waitmsg")?.remove();
+                const paragraph = document.createElement("p");
+                paragraph.textContent = `You: ${message}`;
+                document.getElementById("insmsg").appendChild(paragraph);
+                const res = document.createElement("p2");
+                const f = fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: api,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'openai/gpt-6-luna',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'You are very lonely, playing the character of John Pork, you started the conversation before with: \"hey, I\'m lonely 😈🥵\"',
+                            },
+                            {
+                                role: 'user',
+                                content: message,
+                            },
+                        ],
+                    }),
+                }).then((res) => res.json()).then((data) => {
+                    const paragraph = document.createElement("p");
+                    paragraph.textContent = "John Pork: " + data.choices[0].message.content;
+                    document.getElementById("insmsg").appendChild(paragraph);
+                });
+            })
+        </script>
+    </main>
+
+    <footer>John Pork 2026</footer>
+</body>
+</html>
